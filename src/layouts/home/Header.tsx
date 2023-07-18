@@ -26,20 +26,20 @@ export default function Header() {
     !!account && (
       <>
         <div className="flex justify-between">
+          <div>Contract address: {import.meta.env.VITE_CONTRACT_ADDRESS}</div>
           <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <div>
               {account.slice(0, 5)}...{account.slice(-4)}
             </div>
           </div>
-          <div>Contract address: {import.meta.env.VITE_CONTRACT_ADDRESS}</div>
         </div>
         <div className="mt-2 flex justify-center space-x-2">
           {headerItems.map(({ name, path }) => (
             <Link to={path} key={path}>
               <button
                 className={clsx("btn", {
-                  "btn-primary": location.pathname === path,
+                  "btn-success": location.pathname === path,
                 })}
               >
                 {name}

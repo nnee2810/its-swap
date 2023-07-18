@@ -43,7 +43,7 @@ export default function App() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            <button className="btn btn-primary">
+            <button className="btn btn-success">
               Install MetaMask <BiLinkExternal fontSize="20" />
             </button>
           </a>
