@@ -49,7 +49,7 @@ export default function App() {
           </a>
         </div>
       )}
-      <Toaster position="top-right" />
+      <Toaster position="top-left" />
     </>
   )
 }

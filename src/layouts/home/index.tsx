@@ -1,3 +1,4 @@
+import { ContractEventPayload, ethers } from "ethers"
 import getContract from "helpers/getContract"
 import getProvider from "helpers/getProvider"
 import { useEffect } from "react"
@@ -22,14 +23,52 @@ export default function HomeLayout() {
       setIsMetaMaskConnecting(false)
     }
   }
+
   const handleEvents = async () => {
     const contract = await getContract()
+    const tokenSymbol = await contract.symbol()
+
+    const approvalFromMe = contract.filters.Approval(account, null)
+    contract.on(approvalFromMe, (event: ContractEventPayload) =>
+      toast.success(
+        `You have approved of ${ethers.formatEther(
+          String(event.args[2])
+        )} ${tokenSymbol} for ${event.args[1]}`
+      )
+    )
+    const approvalToMe = contract.filters.Approval(null, account)
+    contract.on(approvalToMe, (event: ContractEventPayload) =>
+      toast.success(
+        `${event.args[0]} has approved of ${ethers.formatEther(
+          String(event.args[2])
+        )} ${tokenSymbol} for you`
+      )
+    )
+
+    const transferFromMe = contract.filters.Transfer(account)
+    contract.on(transferFromMe, (event: ContractEventPayload) =>
+      toast.success(
+        `You have transferred ${ethers.formatEther(
+          String(event.args[2])
+        )} ${tokenSymbol} to ${event.args[1]}`
+      )
+    )
+    const transferToMe = contract.filters.Transfer(null, account)
+    contract.on(transferToMe, (event: ContractEventPayload) =>
+      toast.success(
+        `${event.args[0]} has transferred ${ethers.formatEther(
+          String(event.args[2])
+        )} ${tokenSymbol} to you`
+      )
+    )
   }
 
   useEffect(() => {
     checkConnection()
-    handleEvents()
   }, [])
+  useEffect(() => {
+    if (account) handleEvents()
+  }, [account])
 
   return account ? (
     <div className="px-4 py-2">

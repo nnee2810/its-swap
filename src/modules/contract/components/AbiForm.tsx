@@ -7,6 +7,7 @@ import getContract from "helpers/getContract"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { BsArrowReturnRight } from "react-icons/bs"
+import getTransactionUrl from "utils/getTransactionUrl"
 
 interface AbiFormProps {
   abi: AbiFunction
@@ -25,20 +26,18 @@ export default function AbiForm({ abi }: AbiFormProps) {
   const [transactionUrl, setTransactionUrl] = useState("")
 
   const handleSubmit = form.handleSubmit(async (data: Record<string, any>) => {
-    const contract = await getContract()
     setIsLoading(true)
     setResult("")
     setError("")
     setTransactionUrl("")
     try {
+      const contract = await getContract()
       if (["view", "pure"].includes(abi.stateMutability)) {
         const result = await contract[abi.name](...Object.values(data))
         setResult(String(result))
       } else {
         const result = await contract[abi.name].send(...Object.values(data))
-        setTransactionUrl(
-          [import.meta.env.VITE_ETHER_SCAN_URL, "tx", result.hash].join("/")
-        )
+        setTransactionUrl(getTransactionUrl(result.hash))
         setResult("Success")
       }
     } catch (error: any) {

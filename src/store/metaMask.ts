@@ -17,7 +17,8 @@ export const useMetaMask = create<MetaMaskState>((set) => ({
   isMetaMaskInstalled: false,
   isMetaMaskConnecting: false,
   isMetaMaskConnected: false,
-  setAccount: (account: string | null) =>
+
+  setAccount: (account) =>
     set({
       account,
     }),

@@ -1,10 +1,11 @@
 import contractAbi from "abi/contract.json"
 import { AbiFunction } from "abitype"
 import Collapse from "components/core/Collapse"
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import AbiForm from "../components/AbiForm"
 
 export default function ReadContract() {
+  const [expanded, setExpanded] = useState(false)
   const readFunctions = useMemo(
     () =>
       contractAbi.filter(
@@ -14,9 +15,23 @@ export default function ReadContract() {
       ),
     []
   )
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current
+        .querySelectorAll(".collapse > input[type='checkbox']")
+        .forEach((e) => ((e as HTMLInputElement).checked = expanded))
+    }
+  }, [expanded])
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" ref={ref}>
+      <div className="flex justify-end">
+        <button className="btn btn-sm" onClick={() => setExpanded(!expanded)}>
+          {expanded ? "Collapse" : "Expand"} All
+        </button>
+      </div>
       {readFunctions.map((abi, idx) => (
         <Collapse title={`${idx + 1}. ${abi.name}`} key={idx}>
           <AbiForm abi={abi as AbiFunction} />
