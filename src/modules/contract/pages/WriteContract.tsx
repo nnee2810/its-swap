@@ -1,14 +1,14 @@
-import contractAbi from "abi/contract.json"
 import { AbiFunction } from "abitype"
 import Collapse from "components/core/Collapse"
 import { useEffect, useMemo, useRef, useState } from "react"
-import AbiForm from "../components/AbiForm"
+import { erc20ABI } from "wagmi"
+import ReadContractForm from "../components/ReadContractForm"
 
 export default function WriteContract() {
   const [expanded, setExpanded] = useState(false)
   const writeFunctions = useMemo(
     () =>
-      contractAbi.filter(
+      erc20ABI.filter(
         (abi) =>
           abi.type === "function" &&
           !["view", "pure"].includes(abi.stateMutability || "")
@@ -34,7 +34,7 @@ export default function WriteContract() {
       </div>
       {writeFunctions.map((abi, idx) => (
         <Collapse title={`${idx + 1}. ${abi.name}`} key={idx}>
-          <AbiForm abi={abi as AbiFunction} />
+          <ReadContractForm abi={abi as AbiFunction} />
         </Collapse>
       ))}
     </div>

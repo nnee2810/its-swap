@@ -1,53 +1,31 @@
-import detectEthereumProvider from "@metamask/detect-provider"
+import { InjectedConnector } from "@wagmi/core/connectors/injected"
 import { router } from "configs/router"
-import { useEffect, useState } from "react"
-import toast, { Toaster } from "react-hot-toast"
-import { BiLinkExternal } from "react-icons/bi"
+import { Toaster, toast } from "react-hot-toast"
 import { RouterProvider } from "react-router-dom"
-import { useMetaMask } from "store/metaMask"
+import { useAccount, useConnect } from "wagmi"
 
 export default function App() {
-  const { account, isMetaMaskInstalled, setAccount, setIsMetaMaskInstalled } =
-    useMetaMask()
-  const [isDetectingProvider, setIsDetectingProvider] = useState(true)
-
-  useEffect(() => {
-    detectEthereumProvider()
-      .then((provider) => {
-        if (provider?.isMetaMask) {
-          setIsMetaMaskInstalled(true)
-          provider.on("accountsChanged", (accounts: string[]) => {
-            if (accounts.length && accounts[0] !== account)
-              setAccount(accounts[0])
-            else setAccount(null)
-          })
-          provider.on("chainChanged", () => location.reload())
-        } else toast.error("MetaMask is not installed")
-      })
-      .finally(() => {
-        setIsDetectingProvider(false)
-      })
-  }, [])
+  const { isConnected, isConnecting } = useAccount()
+  const { connect } = useConnect({
+    connector: new InjectedConnector(),
+    onSuccess() {
+      toast.success("Connected to MetaMask")
+    },
+    onError() {
+      toast.error("Can't connect to MetaMask")
+    },
+  })
 
   return (
     <>
-      {isDetectingProvider ? (
-        <div className="p-4 flex justify-center">
-          <span className="loading loading-spinner loading-lg"></span>
-        </div>
-      ) : isMetaMaskInstalled ? (
+      {isConnected ? (
         <RouterProvider router={router} />
       ) : (
-        <div className="p-4 flex justify-center">
-          <a
-            href="https://metamask.io/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <button className="btn btn-success">
-              Install MetaMask <BiLinkExternal fontSize="20" />
-            </button>
-          </a>
+        <div className="h-screen flex justify-center items-center">
+          <button className="btn btn-success" onClick={() => connect()}>
+            Connect Wallet{" "}
+            {isConnecting && <span className="loading loading-infinity"></span>}
+          </button>
         </div>
       )}
       <Toaster position="top-left" />

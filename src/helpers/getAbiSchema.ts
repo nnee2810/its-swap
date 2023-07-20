@@ -2,10 +2,10 @@ import { AbiFunction } from "abitype"
 import { ethers } from "ethers"
 import Joi from "joi"
 
-export default function getAbiSchema(abi: AbiFunction) {
+export default function getAbiSchema(func: AbiFunction) {
   return Joi.object(
     Object.fromEntries(
-      abi.inputs.map((input) => [
+      func.inputs.map((input) => [
         input.name,
         (() => {
           if (input.type.includes("uint")) {

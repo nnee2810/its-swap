@@ -1,69 +1,58 @@
 import { joiResolver } from "@hookform/resolvers/joi"
+import { readContract } from "@wagmi/core"
+import erc20ABI from "abi/erc20ABI.json"
 import { AbiFunction } from "abitype"
 import clsx from "clsx"
 import Field from "components/core/field"
 import getAbiSchema from "helpers/getAbiSchema"
-import getContract from "helpers/getContract"
 import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { BsArrowReturnRight } from "react-icons/bs"
-import getTransactionUrl from "utils/getTransactionUrl"
+import { useTokenStore } from "store/token"
 
-interface AbiFormProps {
-  abi: AbiFunction
+interface ReadContractFormProps {
+  func: AbiFunction
 }
 
-export default function AbiForm({ abi }: AbiFormProps) {
+export default function ReadContractForm({ func }: ReadContractFormProps) {
+  const { address } = useTokenStore()
   const form = useForm({
     defaultValues: Object.fromEntries(
-      abi.inputs.map((input) => [input.name, ""])
+      func.inputs.map((input) => [input.name, ""])
     ),
-    resolver: joiResolver(getAbiSchema(abi)),
+    resolver: joiResolver(getAbiSchema(func)),
   })
-  const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState("")
-  const [error, setError] = useState("")
-  const [transactionUrl, setTransactionUrl] = useState("")
 
-  const handleSubmit = form.handleSubmit(async (data: Record<string, any>) => {
-    setIsLoading(true)
-    setResult("")
-    setError("")
-    setTransactionUrl("")
-    try {
-      const contract = await getContract()
-      if (["view", "pure"].includes(abi.stateMutability)) {
-        const result = await contract[abi.name](...Object.values(data))
-        setResult(String(result))
-      } else {
-        const result = await contract[abi.name].send(...Object.values(data))
-        setTransactionUrl(getTransactionUrl(result.hash))
-        setResult("Success")
-      }
-    } catch (error: any) {
-      setError(error?.info?.error?.message || "")
-    } finally {
-      setIsLoading(false)
+  const [data, setData] = useState("")
+  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = form.handleSubmit(
+    async (values: Record<string, any>) => {
+      try {
+        const data = await readContract({
+          address: address!,
+          abi: erc20ABI,
+          functionName: func.name,
+          args: Object.values(values),
+        })
+        setData(data)
+      } catch (error) {}
     }
-  })
+  )
   const handleReset = () => {
     form.reset()
-    setResult("")
+    setData("")
     setError("")
-    setTransactionUrl("")
+    setIsLoading(false)
   }
 
-  useEffect(() => {
-    if (!abi.inputs.length)
-      getContract().then((contract) =>
-        contract[abi.name]().then((result) => setResult(String(result)))
-      )
-  }, [])
+  useEffect(() => {}, [args])
 
   return (
     <FormProvider {...form}>
       <form onSubmit={handleSubmit}>
-        {abi.inputs.map((input, idx) => (
+        {func.inputs.map((input, idx) => (
           <Field
             variant="text"
             name={input.name!}
@@ -71,10 +60,10 @@ export default function AbiForm({ abi }: AbiFormProps) {
             key={idx}
           />
         ))}
-        {abi.outputs.map((output, idx) => (
+        {func?.outputs?.map((output, idx) => (
           <div className="flex items-center space-x-1" key={idx}>
             <BsArrowReturnRight fontSize="12" />
-            {result && <div>{result}</div>}
+            {String(data) !== "undefined" && <div>{String(data)}</div>}
             <div>
               <span>{output.name}</span>{" "}
               <i className="text-xs text-gray-500">{output.type}</i>
@@ -82,18 +71,18 @@ export default function AbiForm({ abi }: AbiFormProps) {
           </div>
         ))}
         {}
-        {!!abi.inputs.length && (
+        {!!func.inputs.length && (
           <div className="mt-2 flex items-center space-x-1">
             <button className={clsx("btn btn-success btn-sm")}>
               Submit{" "}
               {isLoading && (
-                <span className="loading loading-spinner loading-xs"></span>
+                <span className="loading loading-infinity loading-sm"></span>
               )}
             </button>
             <button className="btn btn-sm" type="button" onClick={handleReset}>
               Reset
             </button>
-            {transactionUrl && (
+            {/* {transactionUrl && (
               <a
                 href={transactionUrl}
                 target="_blank"
@@ -103,7 +92,7 @@ export default function AbiForm({ abi }: AbiFormProps) {
                   View transaction
                 </button>
               </a>
-            )}
+            )}*/}
             {error && <div className="text-xs text-red-500">{error}</div>}
           </div>
         )}

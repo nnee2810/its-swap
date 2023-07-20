@@ -1,17 +1,15 @@
-import contractAbi from "abi/contract.json"
+import erc20ABI from "abi/erc20ABI.json"
 import { AbiFunction } from "abitype"
 import Collapse from "components/core/Collapse"
 import { useEffect, useMemo, useRef, useState } from "react"
-import AbiForm from "../components/AbiForm"
+import ReadContractForm from "../components/ReadContractForm"
 
 export default function ReadContract() {
   const [expanded, setExpanded] = useState(false)
   const readFunctions = useMemo(
     () =>
-      contractAbi.filter(
-        (abi) =>
-          abi.type === "function" &&
-          ["view", "pure"].includes(abi.stateMutability || "")
+      erc20ABI.filter(
+        (func) => func.type === "function" && func.stateMutability === "view"
       ),
     []
   )
@@ -32,9 +30,9 @@ export default function ReadContract() {
           {expanded ? "Collapse" : "Expand"} All
         </button>
       </div>
-      {readFunctions.map((abi, idx) => (
-        <Collapse title={`${idx + 1}. ${abi.name}`} key={idx}>
-          <AbiForm abi={abi as AbiFunction} />
+      {readFunctions.map((func, idx) => (
+        <Collapse title={`${idx + 1}. ${func.name}`} key={idx}>
+          <ReadContractForm func={func as AbiFunction} />
         </Collapse>
       ))}
     </div>

@@ -16,7 +16,7 @@ export default function TextInput({
     <input
       {...props}
       className={clsx(
-        "input input-sm input-bordered w-full",
+        "input input-bordered w-full",
         {
           "input-error": isInvalid,
         },
