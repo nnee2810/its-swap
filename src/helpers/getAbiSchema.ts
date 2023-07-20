@@ -25,6 +25,7 @@ export default function getAbiSchema(abi: AbiFunction) {
               .messages({
                 "any.invalid": "{{#label}} is not a valid address",
               })
+          return Joi.string().required()
         })(),
       ])
     )

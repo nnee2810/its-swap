@@ -21,6 +21,7 @@ export default function App() {
               setAccount(accounts[0])
             else setAccount(null)
           })
+          provider.on("chainChanged", () => location.reload())
         } else toast.error("MetaMask is not installed")
       })
       .finally(() => {

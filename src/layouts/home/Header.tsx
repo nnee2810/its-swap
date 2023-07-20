@@ -1,4 +1,7 @@
 import clsx from "clsx"
+import { Network } from "ethers"
+import getProvider from "helpers/getProvider"
+import { useEffect, useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { useMetaMask } from "store/metaMask"
 
@@ -21,12 +24,30 @@ const headerItems: HeaderItem[] = [
 export default function Header() {
   const location = useLocation()
   const { account } = useMetaMask()
+  const [network, setNetwork] = useState<Network | null>(null)
+
+  const handleNetwork = async () => {
+    const provider = getProvider()
+    const net = await provider.getNetwork()
+    setNetwork(net)
+  }
+
+  useEffect(() => {
+    handleNetwork()
+  }, [])
 
   return (
     !!account && (
       <>
         <div className="flex justify-between">
-          <div>Contract address: {import.meta.env.VITE_CONTRACT_ADDRESS}</div>
+          <div>
+            {network && (
+              <div>
+                Network: {network.name} - Chain ID: {String(network.chainId)}
+              </div>
+            )}
+            <div>Contract address: {import.meta.env.VITE_CONTRACT_ADDRESS}</div>
+          </div>
           <div className="flex items-center space-x-2">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <div>
