@@ -54,6 +54,7 @@ export default function WriteContractForm({ func }: WriteContractFormProps) {
             variant="text"
             name={input.name!}
             label={`${input.name} (${input.type})`}
+            type={input.type.includes("uint") ? "number" : "text"}
             key={idx}
           />
         ))}

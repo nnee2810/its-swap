@@ -70,6 +70,7 @@ export default function ReadContractForm({ func }: ReadContractFormProps) {
             variant="text"
             name={input.name!}
             label={`${input.name} (${input.type})`}
+            type={input.type.includes("uint") ? "number" : "text"}
             key={idx}
           />
         ))}
