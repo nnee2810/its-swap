@@ -20,7 +20,7 @@ export default function TokenCheckHistory() {
         await switchNetwork({
           chainId,
         })
-      const { totalSupply, ...token } = await fetchToken({
+      const token = await fetchToken({
         address,
         chainId,
       })

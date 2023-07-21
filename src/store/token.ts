@@ -5,6 +5,10 @@ interface Token {
   decimals: number
   name: string
   symbol: string
+  totalSupply: {
+    formatted: string
+    value: bigint
+  }
 }
 
 interface TokenState {

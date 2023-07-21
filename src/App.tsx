@@ -12,7 +12,7 @@ export default function App() {
 
   useEffect(() => {
     if (!isConnected) open()
-  }, [isConnected])
+  }, [isConnected, open])
 
   return (
     <>

@@ -44,7 +44,7 @@ export default function TokenAddressForm() {
     async ({ tokenAddress }: FormValues) => {
       try {
         setIsChecking(true)
-        const { totalSupply, ...token } = await fetchToken({
+        const token = await fetchToken({
           address: tokenAddress as `0x${string}`,
         })
         setToken(token)
