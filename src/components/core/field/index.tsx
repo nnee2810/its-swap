@@ -22,6 +22,7 @@ export default function Field(props: FieldProps) {
       <Controller
         control={control}
         name={name}
+        // eslint-disable-next-line no-unused-vars
         render={({ field: { ref, ...field } }) => (
           <>
             {variant === "text" && (

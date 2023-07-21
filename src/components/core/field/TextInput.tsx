@@ -7,6 +7,7 @@ export interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export default function TextInput({
+  // eslint-disable-next-line no-unused-vars
   variant,
   isInvalid,
   className,

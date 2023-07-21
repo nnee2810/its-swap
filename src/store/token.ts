@@ -16,6 +16,7 @@ interface TokenState {
   decimals?: number
   name?: string
   symbol?: string
+  // eslint-disable-next-line no-unused-vars
   setToken: (token: Partial<Token>) => void
 }
 
