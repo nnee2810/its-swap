@@ -22,13 +22,13 @@ export default function Field(props: FieldProps) {
       <Controller
         control={control}
         name={name}
-        render={({ field: { ref, ...restField } }) => (
+        render={({ field: { ref, ...field } }) => (
           <>
             {variant === "text" && (
               <TextInput
                 isInvalid={!!getFieldError(errors, props.name)}
                 {...props}
-                {...restField}
+                {...field}
               />
             )}
           </>

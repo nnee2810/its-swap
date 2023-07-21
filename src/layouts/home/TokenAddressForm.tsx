@@ -1,6 +1,7 @@
 import { joiResolver } from "@hookform/resolvers/joi"
-import { fetchToken } from "@wagmi/core"
+import { fetchToken, getNetwork } from "@wagmi/core"
 import Field from "components/core/field"
+import { addTokenCheckHistory } from "helpers/tokenAddressHistory"
 import Joi from "joi"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
@@ -8,6 +9,7 @@ import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
 import { useTokenStore } from "store/token"
 import { isAddress } from "viem"
+import TokenCheckHistory from "./TokenCheckHistory"
 
 interface FormValues {
   tokenAddress: string
@@ -17,7 +19,7 @@ const formSchema = Joi.object<FormValues, true>({
   tokenAddress: Joi.string()
     .label("Token address")
     .required()
-    .custom((value, helpers) => {
+    .custom((value: string, helpers) => {
       if (isAddress(value)) return value
       return helpers.error("any.invalid")
     })
@@ -35,6 +37,7 @@ export default function TokenAddressForm() {
   })
   const navigate = useNavigate()
   const { name, setToken } = useTokenStore()
+
   const [isChecking, setIsChecking] = useState(false)
 
   const handleSubmit = form.handleSubmit(
@@ -45,6 +48,13 @@ export default function TokenAddressForm() {
           address: tokenAddress as `0x${string}`,
         })
         setToken(token)
+        const network = getNetwork()
+        addTokenCheckHistory({
+          address: tokenAddress as `0x${string}`,
+          name: token.name,
+          chainId: network.chain?.id || -1,
+          chainName: network.chain?.name || "",
+        })
         navigate("/contract/read")
       } catch (error) {
         toast.error("Can't find token, please check token address or network")
@@ -72,6 +82,7 @@ export default function TokenAddressForm() {
             Check{" "}
             {isChecking && <span className="loading loading-infinity"></span>}
           </button>
+          <TokenCheckHistory />
         </form>
       </FormProvider>
       {name && (

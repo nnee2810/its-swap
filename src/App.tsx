@@ -1,20 +1,18 @@
-import { InjectedConnector } from "@wagmi/core/connectors/injected"
+import { Web3Button, Web3Modal, useWeb3Modal } from "@web3modal/react"
 import { router } from "configs/router"
-import { Toaster, toast } from "react-hot-toast"
+import { ethereumClient } from "main"
+import { useEffect } from "react"
+import { Toaster } from "react-hot-toast"
 import { RouterProvider } from "react-router-dom"
-import { useAccount, useConnect } from "wagmi"
+import { useAccount } from "wagmi"
 
 export default function App() {
-  const { isConnected, isConnecting } = useAccount()
-  const { connect } = useConnect({
-    connector: new InjectedConnector(),
-    onSuccess() {
-      toast.success("Connected to MetaMask")
-    },
-    onError() {
-      toast.error("Can't connect to MetaMask")
-    },
-  })
+  const { isConnected } = useAccount()
+  const { open } = useWeb3Modal()
+
+  useEffect(() => {
+    if (!isConnected) open()
+  }, [isConnected])
 
   return (
     <>
@@ -22,13 +20,14 @@ export default function App() {
         <RouterProvider router={router} />
       ) : (
         <div className="h-screen flex justify-center items-center">
-          <button className="btn btn-success" onClick={() => connect()}>
-            Connect Wallet{" "}
-            {isConnecting && <span className="loading loading-infinity"></span>}
-          </button>
+          <Web3Button />
         </div>
       )}
       <Toaster position="top-left" />
+      <Web3Modal
+        projectId={import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID}
+        ethereumClient={ethereumClient}
+      />
     </>
   )
 }

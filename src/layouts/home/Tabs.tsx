@@ -1,6 +1,5 @@
 import clsx from "clsx"
-import { Link, Navigate, useLocation } from "react-router-dom"
-import { useTokenStore } from "store/token"
+import { Link, useLocation } from "react-router-dom"
 
 interface HeaderItem {
   name: string
@@ -20,9 +19,8 @@ const headerItems: HeaderItem[] = [
 
 export default function Tabs() {
   const location = useLocation()
-  const { address } = useTokenStore()
 
-  return address ? (
+  return (
     <div className="mt-2 flex justify-center space-x-2">
       {headerItems.map(({ name, path }) => (
         <Link to={path} key={path}>
@@ -36,7 +34,5 @@ export default function Tabs() {
         </Link>
       ))}
     </div>
-  ) : (
-    <Navigate to="/" />
   )
 }

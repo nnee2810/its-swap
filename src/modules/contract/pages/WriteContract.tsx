@@ -2,7 +2,7 @@ import { AbiFunction } from "abitype"
 import Collapse from "components/core/Collapse"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { erc20ABI } from "wagmi"
-import ReadContractForm from "../components/ReadContractForm"
+import WriteContractForm from "../components/WriteContractForm"
 
 export default function WriteContract() {
   const [expanded, setExpanded] = useState(false)
@@ -32,9 +32,9 @@ export default function WriteContract() {
           {expanded ? "Collapse" : "Expand"} All
         </button>
       </div>
-      {writeFunctions.map((abi, idx) => (
-        <Collapse title={`${idx + 1}. ${abi.name}`} key={idx}>
-          <ReadContractForm abi={abi as AbiFunction} />
+      {writeFunctions.map((func, idx) => (
+        <Collapse title={`${idx + 1}. ${func.name}`} key={idx}>
+          <WriteContractForm func={func as AbiFunction} />
         </Collapse>
       ))}
     </div>

@@ -1,3 +1,4 @@
+import { Web3NetworkSwitch } from "@web3modal/react"
 import { toast } from "react-hot-toast"
 import { useAccount, useDisconnect } from "wagmi"
 
@@ -10,12 +11,15 @@ export default function Header() {
   })
 
   return (
-    <div className="flex items-center space-x-2">
-      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-      <div>{address}</div>
-      <button className="btn btn-sm" onClick={() => disconnect()}>
-        Disconnect
-      </button>
+    <div className="flex justify-between items-center">
+      <div className="flex items-center space-x-2">
+        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <div>{address}</div>
+        <button className="btn btn-sm" onClick={() => disconnect()}>
+          Disconnect
+        </button>
+      </div>
+      <Web3NetworkSwitch />
     </div>
   )
 }
