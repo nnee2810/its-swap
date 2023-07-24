@@ -9,14 +9,14 @@ import { useEffect, useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { BsArrowReturnRight } from "react-icons/bs"
-import { useTokenStore } from "store/token"
+import { useTokenCheckingStore } from "store/tokenChecking"
 
 interface ReadContractFormProps {
   func: AbiFunction
 }
 
 export default function ReadContractForm({ func }: ReadContractFormProps) {
-  const { address } = useTokenStore()
+  const { address } = useTokenCheckingStore()
   const form = useForm({
     defaultValues: Object.fromEntries(
       func.inputs.map((input) => [input.name, ""])

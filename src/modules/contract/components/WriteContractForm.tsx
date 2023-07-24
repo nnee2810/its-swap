@@ -6,7 +6,7 @@ import Field from "components/core/field"
 import getAbiSchema from "helpers/getAbiSchema"
 import { FormProvider, useForm } from "react-hook-form"
 import { BsArrowReturnRight } from "react-icons/bs"
-import { useTokenStore } from "store/token"
+import { useTokenCheckingStore } from "store/tokenChecking"
 import getTransactionUrl from "utils/getTransactionUrl"
 import { useContractWrite, useWaitForTransaction } from "wagmi"
 
@@ -15,7 +15,7 @@ interface WriteContractFormProps {
 }
 
 export default function WriteContractForm({ func }: WriteContractFormProps) {
-  const token = useTokenStore()
+  const token = useTokenCheckingStore()
   const form = useForm({
     defaultValues: Object.fromEntries(
       func.inputs.map((input) => [input.name, ""])

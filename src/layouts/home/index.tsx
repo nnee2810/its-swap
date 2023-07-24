@@ -1,13 +1,13 @@
 import { PropsWithChildren, useEffect } from "react"
-import { useTokenStore } from "store/token"
+import { useTokenCheckingStore } from "store/tokenChecking"
 import { useAccount } from "wagmi"
 import Header from "./Header"
 import Tabs from "./Tabs"
-import TokenAddressForm from "./TokenAddressForm"
+import TokenCheckForm from "./TokenCheckForm"
 
 export default function HomeLayout({ children }: PropsWithChildren) {
   const { isConnected } = useAccount()
-  const { address } = useTokenStore()
+  const { address } = useTokenCheckingStore()
 
   useEffect(() => {}, [])
 
@@ -15,7 +15,7 @@ export default function HomeLayout({ children }: PropsWithChildren) {
     isConnected && (
       <div className="px-4 py-2 space-y-4">
         <Header />
-        <TokenAddressForm />
+        <TokenCheckForm />
         {!!address && <Tabs />}
         {children}
       </div>

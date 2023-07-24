@@ -1,8 +1,8 @@
 import { Navigate, Outlet } from "react-router-dom"
-import { useTokenStore } from "store/token"
+import { useTokenCheckingStore } from "store/tokenChecking"
 
 export default function TokenGuardLayout() {
-  const { address } = useTokenStore()
+  const { address } = useTokenCheckingStore()
 
   return address ? <Outlet /> : <Navigate to="/" />
 }

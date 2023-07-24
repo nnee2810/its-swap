@@ -1,14 +1,15 @@
 import { joiResolver } from "@hookform/resolvers/joi"
-import { fetchToken, getNetwork } from "@wagmi/core"
+import { fetchToken } from "@wagmi/core"
 import Field from "components/core/field"
-import { addTokenCheckHistory } from "helpers/tokenAddressHistory"
 import Joi from "joi"
 import { useState } from "react"
 import { FormProvider, useForm } from "react-hook-form"
 import { toast } from "react-hot-toast"
 import { useNavigate } from "react-router-dom"
-import { useTokenStore } from "store/token"
+import { useTokenCheckHistoryStore } from "store/tokenCheckHistory"
+import { useTokenCheckingStore } from "store/tokenChecking"
 import { isAddress } from "viem"
+import { useNetwork } from "wagmi"
 import TokenCheckHistory from "./TokenCheckHistory"
 
 interface FormValues {
@@ -28,7 +29,7 @@ const formSchema = Joi.object<FormValues, true>({
     }),
 })
 
-export default function TokenAddressForm() {
+export default function TokenCheckForm() {
   const form = useForm<FormValues>({
     defaultValues: {
       tokenAddress: "",
@@ -36,25 +37,27 @@ export default function TokenAddressForm() {
     resolver: joiResolver(formSchema),
   })
   const navigate = useNavigate()
-  const { name, setToken } = useTokenStore()
-
+  const network = useNetwork()
+  const tokenCheckingStore = useTokenCheckingStore()
+  const tokenCheckHistoryStore = useTokenCheckHistoryStore()
   const [isChecking, setIsChecking] = useState(false)
 
   const handleSubmit = form.handleSubmit(
     async ({ tokenAddress }: FormValues) => {
       try {
         setIsChecking(true)
-        const token = await fetchToken({
+        // eslint-disable-next-line no-unused-vars
+        const { totalSupply, ...token } = await fetchToken({
           address: tokenAddress as `0x${string}`,
         })
-        setToken(token)
-        const network = getNetwork()
-        addTokenCheckHistory({
-          address: tokenAddress as `0x${string}`,
-          name: token.name,
-          chainId: network.chain?.id || -1,
-          chainName: network.chain?.name || "",
-        })
+        tokenCheckingStore.setTokenChecking(token)
+        if (network.chain)
+          tokenCheckHistoryStore.add({
+            address: tokenAddress as `0x${string}`,
+            name: token.name,
+            chainId: network.chain?.id || -1,
+            chainName: network.chain?.name || "",
+          })
         navigate("/contract/read")
       } catch (error) {
         toast.error("Can't find token, please check token address or network")
@@ -85,8 +88,10 @@ export default function TokenAddressForm() {
           <TokenCheckHistory />
         </form>
       </FormProvider>
-      {name && (
-        <div className="text-center">You're viewing {name}'s function</div>
+      {tokenCheckingStore.name && (
+        <div className="text-center">
+          You're viewing {tokenCheckingStore.name}'s function
+        </div>
       )}
     </div>
   )
